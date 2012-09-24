@@ -21,7 +21,7 @@ Here we specifiy './html' as output dir because there are already some special a
 BUT FIRST, you will need to convert each generated DOT file(s) into SVG files.
 Install Graphviz 2.28 on your system, 
 Then, under the 'runtime/help/' directory, for all DOT files present :
-> $GRAPHVIZHOME\bin\dot.exe -Gcharset=latin1 -Tsvg -O _____.dot
-(This will result in a '_____.dot.svg' file creation in the directory)
+> $GRAPHVIZHOME\bin\dot.exe -Gcharset=latin1 -Tsvg -O xxxxxxxx.dot
+You should see some 'xxxxxxxx.dot.svg' file in the directory.
 
 Once you are done with SVG conversion, open the 'index.html' with a W3C compliant browser (I use Firefox 15.0.1 for my tests) and enjoy !
