@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>SVG from converted Graphviz DOT</title>
+<link REL="StyleSheet" HREF="jposworkflow.css" TYPE="text/css" />
+</head>
+<body>
+
+	<table class="svgObjectWrapper">
+		<tr>
+			<td>
+				<object id="mySvg" data="root.dot.svg" type="image/svg+xml"><!-- width="100%" height="100%" -->				
+				</object>
+			</td>
+		</tr>
+	</table>	
+
+	<script type="text/javascript">
+		var tooltipTimeout=2000;
+		var svgObject;
+		var svgDoc;
+		var tooltipIdPrefix;
+		var gWindow = window;
+		
+		if (!document.getElementsByClassName) {
+			document.getElementsByClassName = function(cn) {
+				var allT = document.getElementsByTagName('*'), allCN = [], i = 0, a;
+				while (a = allT[i++]) {
+					a.className == cn ? allCN[allCN.length] = a : null;
+				}
+				return allCN
+			}
+		}
+		
+
+		function parseURL(url) {
+		    var a =  document.createElement('a');
+		    a.href = url;
+		    return {
+		        source: url,
+		        protocol: a.protocol.replace(':',''),
+		        host: a.hostname,
+		        port: a.port,
+		        query: a.search,
+		        params: (function(){
+		            var ret = {},
+		                seg = a.search.replace(/^\?/,'').split('&'),
+		                len = seg.length, i = 0, s;
+		            for (;i<len;i++) {
+		                if (!seg[i]) { continue; }
+		                s = seg[i].split('=');
+		                ret[s[0]] = s[1];
+		            }
+		            return ret;
+		        })(),
+		        file: (a.pathname.match(/\/([^\/?#]+)$/i) || [,''])[1],
+		        hash: a.hash.replace('#',''),
+		        path: a.pathname.replace(/^([^\/])/,'/$1'),
+		        relative: (a.href.match(/tps?:\/\/[^\/]+(.+)/) || [,''])[1],
+		        segments: a.pathname.replace(/^\//,'').split('/')
+		    };
+		}		
+		
+		function getToolipId(id) {
+			return tooltipIdPrefix + "_" + id + "_info";
+		}
+		
+		function ShowTooltip(evt, id) {
+			HideAllTooltipExcept(evt, id);	
+			
+			var tooltip = document.getElementById(getToolipId(id));
+
+			var content;
+
+			var nodeElt = svgDoc.getElementById(id);
+
+			var listTitles = nodeElt.getElementsByTagNameNS(
+					"http://www.w3.org/2000/svg", "title");
+			var firstTitle = listTitles[0];
+
+			var anchorEltList = nodeElt.getElementsByTagName("a");
+			var anchorElt = anchorEltList[0];
+
+			if (anchorElt) {
+				content = anchorElt.getAttribute("xlink:title");
+				firstTitle.textContent = " ";
+				anchorElt.removeAttribute("xlink:title");
+			} else {
+				content = firstTitle.textContent;
+				firstTitle.textContent = " ";				
+			}
+
+			if (!tooltip) {
+
+				var div = document.createElementNS(
+						"http://www.w3.org/1999/xhtml", "span");
+				div.setAttributeNS(null, "id", getToolipId(id));
+				div.setAttributeNS(null, "class", "tooltip");
+				div.innerHTML = content;
+	
+				var listBodies = document.getElementsByTagName("body");
+				var body = listBodies[0];
+	
+				body.appendChild(div);
+
+				tooltip = div;
+			}			
+			
+			if (tooltip) {
+				tooltip
+						.setAttributeNS(null, "style",
+								"visibility:visible;position:absolute;left:"
+										+ (svgObject.offsetLeft + evt.clientX + 10) + "px;top:" + (svgObject.offsetTop + evt.clientY + 10)
+										+ "px;");
+				setTimeout(function() {
+					HideTooltip(evt, id);
+				}, tooltipTimeout);
+			}
+		}
+
+		function HideAllTooltipExcept(evt, id) {
+			var tooltipList = document.getElementsByClassName("tooltip");
+			for (i = 0; i < tooltipList.length; i++) {
+				var tooltip = tooltipList[i];
+				if (tooltip.id != getToolipId(id)) {
+					tooltip.setAttributeNS(null, "style", "visibility:hidden;");	
+				}
+			}
+		}
+
+		function HideTooltip(evt, id) {
+			var tooltip = document.getElementById(getToolipId(id));
+			if (tooltip) {
+				tooltip.setAttributeNS(null, "style", "visibility:hidden;");
+			}
+		}
+
+		function onSvgLoaded() {
+ 			var svgDocURL = parseURL(svgDoc.URL);			
+ 			tooltipIdPrefix = svgDocURL.file; 
+			
+			var gElts = svgDoc.getElementsByTagName("g");
+			for (i = 0; i < gElts.length; i++) {
+
+				var currElt = gElts[i];
+				var currEltClass = "";
+
+				if (currElt.hasAttribute("class")) {
+					if ((currElt.getAttribute("class") == "node")
+							|| (currElt.getAttribute("class") == "edge")) {
+						currElt.addEventListener("mouseover", function(evt) {
+							ShowTooltip(evt, this.id);
+						}, false);
+						
+						var anchorEltList = currElt.getElementsByTagName("a");
+						if (anchorEltList) {
+							var anchorElt = anchorEltList[0];
+			
+							if (anchorElt) {
+								if (anchorElt.hasAttribute("xlink:href")) {
+									var href = anchorElt.getAttribute("xlink:href");
+									href = href + ".dot.svg";
+									anchorElt.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", href);
+								}
+							}
+						}						
+						
+					}
+					else if (currElt.getAttribute("class") == "graph") {
+					}
+				}
+
+			}
+			
+		}
+
+		svgObject = document.getElementById("mySvg");
+		
+		svgObject.addEventListener("load", function() {
+			svgDoc = svgObject.contentDocument; //get the inner DOM of svg			
+			onSvgLoaded();
+		}, false);
+	</script>
+
+</body>
+
+</html>

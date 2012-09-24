@@ -1,0 +1,55 @@
+
+			.svgObjectWrapper {width: 100%;border: none;border-spacing:0px;text-align:center;}
+			.svgObjectWrapper tr {width:100%;}
+			.svgObjectWrapper tr td {width:100%;padding:0px;}
+			
+			/* Node/edge common defs */
+			.participantNature:before{content: url(img/participant.png);}			
+			.groupNature:before {content: url(img/group.png);}
+			.subflowNature:before {content: url(img/subflow.png);}			
+			.undefGroupNature:before {content: url(img/group-undef.png);}
+			.undefParticipantNature:before {content: url(img/participant-undef.png);}
+
+			li.guaranteedAttribute {list-style-image: url(img/ctx-attr-guaranteed.png);}
+			li.nonGuaranteedAttribute {list-style-image: url(img/ctx-attr-optional.png);}
+			
+			.attribute {font-weight:normal;font-family:Arial;font-size:10px;font-style:italic;}
+			.guaranteedAttribute {font-weight:normal;font-family:Arial;font-size:10px;font-style:italic;}
+			.nonGuaranteedAttribute {font-weight:normal;font-family:Arial;font-size:10px;font-style:italic;}
+			
+			/* Node related defs */
+			.nodeTooltip {background-color:#FFFFCE;border: none;border-spacing:0px;}
+			.nodeTooltip tr {width:100%;}
+			.nodeTooltip td {width:100%;padding:0px;border: 1px solid black;}
+
+			.nodeTooltipHeader {width: 100%;border:none; border-spacing:2px;text-align:center;font-family:Arial, Times, serif;font-size:12px;}
+			.nodeTooltipHeader tr {width: 100%;}
+			.nodeTooltipHeader tr td {width: 100%;padding:0px;border: none;}
+
+			.nodeTooltipInfo1 {font-weight:bold;}
+
+			.nodeTooltipInfo2 {font-weight:bold;}
+			.nodeTooltipInfo2:before {content: "Group [";}
+			.nodeTooltipInfo2:after {content: "]";}
+
+			.nodeTooltipInfo3 {font-style:italic;}
+
+			.nodeTooltipContent {border: none; width: 100%;border-spacing:2px;}
+			.nodeTooltipContent tr {width: 100%;}
+			.nodeTooltipContent tr td {width: 100%;padding:0px;border: none;}			
+
+			/* Edge related defs */
+			.edgeTooltip {background-color:#FFFFCE;border: 1px solid black;border-spacing:0px;}
+			.edgeTooltip tr {width:100%;}
+			.edgeTooltip td {padding:2px;border: none;}
+
+			h4.transitionFromSubflow {font-style:italic;text-align:left;font-family:Arial, Times, serif;font-size:11px;}
+			h4.transitionFromSubflow:before {content: "(parent subflow inheritance)";}
+
+			.defaultAttrSet .attribute {text-align:left;list-style-image: url(img/ctx-attr-put.png);}
+			.transition .attribute {list-style-image: url(img/ctx-attr-put.png);}
+
+			.transition h4 {font-weight:bold;text-align:left;font-family:Arial, Times, serif;font-size:12px;}			
+			.transition h4:before {content: url(img/transition.png);}
+			.transition h4.defaultTransition {font-weight:normal;text-align:left;font-family:Arial, Times, serif;font-size:12px;font-style:italic;}
+			.transition h4.defaultTransition:before {content: url(img/transition.png)" default";}

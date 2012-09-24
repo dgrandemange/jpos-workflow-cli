@@ -1,0 +1,27 @@
+<!DOCTYPE SYSTEM [
+ <!ENTITY Authorization      SYSTEM "Authorization.inc">
+]> 
+
+<txnmgr name="myDummyTxMgr" logger="Q2"	class="org.jpos.transaction.TransactionManager">
+
+	<property name="space" value="tspace:default" />
+	<property name="queue" value="myTxQueue" />
+	<property name="persistent-space" value="tspace:myTxnSpace" />
+	<property name="sessions" value="1" />
+
+	<participant class="org.jpos.jposext.jposworkflowcli.demo.transaction.Switch">		
+		<property name="0200" value="Authorization Response Log" selectCriterion="incoming message 0200" />				
+		<property name="unhandled" value="Log" selectCriterion="unhandled message" />
+	</participant>
+	
+	<group name="Response">
+		<participant class="org.jpos.jposext.jposworkflowcli.demo.transaction.Response"/>
+	</group>
+
+	<group name="Log">
+		<participant class="org.jpos.jposext.jposworkflowcli.demo.transaction.Log"/>
+	</group>
+	
+	&Authorization;
+	
+</txnmgr>
