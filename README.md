@@ -17,10 +17,11 @@ About the txmgr2dot command options used above :
 * -s : is optional and indicates you want to benefit the subflow functionnality (should be used only if the tx mgr config is subflow compliant, which is the case here)
 
 Here we specifiy './html' as output dir because there are already some special already prepared resources (html, css, images) in this directory that will nicely enhance the browsing of the graphs.
-But first, you will need to convert each generated DOT file(s) into SVG files :
-* install Graphviz 2.28 on your system, 
-* under the 'runtime/help/' directory, for all DOT files present :
-  > $GRAPHVIZHOME\bin\dot.exe -Gcharset=latin1 -Tsvg -O _____.dot
-  (This will result in a '_____.dot.svg' file creation in the directory)
+
+BUT FIRST, you will need to convert each generated DOT file(s) into SVG files.
+Install Graphviz 2.28 on your system, 
+Then, under the 'runtime/help/' directory, for all DOT files present :
+> $GRAPHVIZHOME\bin\dot.exe -Gcharset=latin1 -Tsvg -O _____.dot
+(This will result in a '_____.dot.svg' file creation in the directory)
 
 Once you are done with SVG conversion, open the 'index.html' with a W3C compliant browser (I use Firefox 15.0.1 for my tests) and enjoy !
