@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -20,10 +19,11 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.jpos.jposext.jposworkflow.cli.ContextMgmtInfoPopulatorCLIImpl;
+import org.jpos.jposext.jposworkflow.cli.TxMgr2DotOptWrapper;
+import org.jpos.jposext.jposworkflow.cli.UsageException;
 import org.jpos.jposext.jposworkflow.model.Graph;
-import org.jpos.jposext.jposworkflow.model.ParticipantInfo;
 import org.jpos.jposext.jposworkflow.service.IDOTLabelFactory;
-import org.jpos.jposext.jposworkflow.service.support.ContextMgmtInfoPopulatorAbstractImpl;
 import org.jpos.jposext.jposworkflow.service.support.FacadeImpl;
 import org.jpos.jposext.jposworkflow.service.support.GraphConverterServiceImpl;
 import org.jpos.jposext.jposworkflow.service.support.LabelFactoryVelocityImpl;
@@ -40,107 +40,6 @@ import org.jpos.q2.CLIContext;
 public class TXMGR2DOT implements CLICommand {
 
 	public static final String DEFAULT_ROOT_GRAPHNAME = "root";
-
-	@SuppressWarnings("serial")
-	protected class UsageException extends RuntimeException {
-
-		public UsageException(String message) {
-			super(message);
-		}
-
-	}
-
-	/**
-	 * A wrapper for command options
-	 * 
-	 */
-	protected class TxMgr2DotOptWrapper {
-
-		private String txMgrConfigFilePath;
-
-		private String outputDirOpt;
-
-		private String rootGraphName;
-
-		private boolean subflowMode;
-
-		/**
-		 * @return the txMgrConfigFilePath
-		 */
-		public String getTxMgrConfigFilePath() {
-			return txMgrConfigFilePath;
-		}
-
-		/**
-		 * @param txMgrConfigFilePath
-		 *            the txMgrConfigFilePath to set
-		 */
-		public void setTxMgrConfigFilePath(String txMgrConfigFilePath) {
-			this.txMgrConfigFilePath = txMgrConfigFilePath;
-		}
-
-		/**
-		 * @return the outputDirOpt
-		 */
-		public String getOutputDirOpt() {
-			return outputDirOpt;
-		}
-
-		/**
-		 * @param outputDirOpt
-		 *            the outputDirOpt to set
-		 */
-		public void setOutputDirOpt(String outputDirOpt) {
-			this.outputDirOpt = outputDirOpt;
-		}
-
-		/**
-		 * @return the subflowMode
-		 */
-		public boolean isSubflowMode() {
-			return subflowMode;
-		}
-
-		/**
-		 * @param subflowMode
-		 *            the subflowMode to set
-		 */
-		public void setSubflowMode(boolean subflowMode) {
-			this.subflowMode = subflowMode;
-		}
-
-		/**
-		 * @return the rootGraphName
-		 */
-		public String getRootGraphName() {
-			return rootGraphName;
-		}
-
-		/**
-		 * @param rootGraphName
-		 *            the rootGraphName to set
-		 */
-		public void setRootGraphName(String rootGraphName) {
-			this.rootGraphName = rootGraphName;
-		}
-
-	}
-
-	/**
-	 * A context management info populator using runtime introspection to
-	 * discover annotations on participant classes
-	 * 
-	 */
-	protected class ContextMgmtInfoPopulatorCLIImpl extends
-			ContextMgmtInfoPopulatorAbstractImpl {
-
-		@Override
-		public void processParticipantAnnotations(
-				Map<String, List<ParticipantInfo>> jPosTxnMgrGroups) {
-			// TODO Implement context mgmt annotations discovery on participants
-		}
-
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -173,9 +72,11 @@ public class TXMGR2DOT implements CLICommand {
 					cli.println(String.format(
 							"'%s' is not a writeable directory", outputDirPath));
 				} else {
+					int dotCreatedCount = 0;
 					for (Entry<String, Graph> entry : graphs.entrySet()) {
 						String key = entry.getKey();
 
+						String fileName;
 						String graphName;
 						if (FacadeImpl.ROOT_KEY.equals(key)) {
 							if (null == optWrapper.getRootGraphName()) {
@@ -183,13 +84,19 @@ public class TXMGR2DOT implements CLICommand {
 							} else {
 								graphName = optWrapper.getRootGraphName();
 							}
+							fileName = "root.dot";
 						} else {
 							graphName = key;
+							fileName = graphName + ".dot";
 						}
 
-						createDOTFile(entry.getValue(), graphName,
+						String createdDotFilePath = createDOTFile(entry.getValue(), fileName, graphName,
 								outputDirPath);
+						dotCreatedCount++;
+						cli.println(String.format(
+								"DOT file '%s' created", createdDotFilePath));						
 					}
+					cli.println(String.format("%d DOT file(s) created", dotCreatedCount));						
 				}
 			}
 
@@ -206,7 +113,8 @@ public class TXMGR2DOT implements CLICommand {
 	 * @param outputDir
 	 *            DOT file output directory
 	 */
-	protected void createDOTFile(Graph graph, String graphName, String outputDir) {
+	protected String createDOTFile(Graph graph, String fileName, String graphName,
+			String outputDir) {
 		IDOTLabelFactory labelFactory = new LabelFactoryVelocityImpl();
 		IDOTLabelFactory toolTipFactory = new TooltipFactoryVelocityImpl();
 		GraphConverterServiceImpl graphConverterService = new GraphConverterServiceImpl();
@@ -216,15 +124,14 @@ public class TXMGR2DOT implements CLICommand {
 		FileOutputStream result = null;
 		PrintWriter pw = null;
 		try {
-			String saveFilePath = String.format("%s%s%s.dot", outputDir,
-					System.getProperty("file.separator"), graphName);
-			if (null != saveFilePath) {
-				result = new FileOutputStream(saveFilePath);
-				pw = new PrintWriter(result);
-				graphConverterService.convertGraphToDOT(graphName, graph, pw);
-				pw.flush();
-				pw.close();
-			}
+			String saveFilePath = String.format("%s%s%s", outputDir,
+					System.getProperty("file.separator"), fileName);
+			result = new FileOutputStream(saveFilePath);
+			pw = new PrintWriter(result);
+			graphConverterService.convertGraphToDOT(graphName, graph, pw);
+			pw.flush();
+			pw.close();
+			return saveFilePath;
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -333,7 +240,7 @@ public class TXMGR2DOT implements CLICommand {
 				if (line.hasOption("r")) {
 					optWrapper.setRootGraphName(line.getOptionValue("r"));
 				}
-				
+
 			} else {
 				throw new UsageException("Unknown options : see usage");
 			}
@@ -355,12 +262,12 @@ public class TXMGR2DOT implements CLICommand {
 	private void showUsage(CLIContext cli, Options options, UsageException e) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		PrintWriter pw = new PrintWriter(bos);
-		pw.write(e.getMessage());
+		pw.println(e.getMessage());
 
 		HelpFormatter formatter = new HelpFormatter();
-		formatter.printUsage(pw, 80, TXMGR2DOT.class.getCanonicalName(),
-				options);
-
+		formatter.printHelp(pw, 80, TXMGR2DOT.class.getSimpleName(), "",
+				options, 2, 5, "");
+		pw.flush();
 		cli.println(new String(bos.toByteArray()));
 	}
 

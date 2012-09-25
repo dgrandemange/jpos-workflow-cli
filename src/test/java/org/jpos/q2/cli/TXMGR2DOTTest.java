@@ -3,8 +3,8 @@ package org.jpos.q2.cli;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-import org.jpos.q2.cli.TXMGR2DOT;
-import org.jpos.q2.cli.TXMGR2DOT.UsageException;
+import org.jpos.jposext.jposworkflow.cli.TxMgr2DotOptWrapper;
+import org.jpos.jposext.jposworkflow.cli.UsageException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,12 +15,12 @@ import org.junit.Test;
 public class TXMGR2DOTTest {
 
 	private TXMGR2DOT cmd;
-	private TXMGR2DOT.TxMgr2DotOptWrapper optWrapper;
+	private TxMgr2DotOptWrapper optWrapper;
 	
 	@Before
 	public void setUp() throws Exception {
 		cmd = new TXMGR2DOT();
-		optWrapper = cmd.new TxMgr2DotOptWrapper();
+		optWrapper = new TxMgr2DotOptWrapper();
 	}
 
 	@Test
