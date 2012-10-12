@@ -2,6 +2,7 @@ jpos-workflow-cli
 =================
 
 jPos cli command to convert a jPos transaction manager config to a directed graph (GraphViz DOT format)
+Note that the transaction manager configuration requires to be completed with transition informations. Please take a look here for more infos : https://github.com/dgrandemange/jPosWorkflowEclipsePlugin/wiki
 
 Recipee :
 --------- 
