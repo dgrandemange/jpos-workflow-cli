@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jpos.jposext</groupId>
   <artifactId>jpos-workflow-cli</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   
 	<name>jpos-workflow-cli</name>
 	<url>https://github.com/dgrandemange/jpos-workflow-cli</url>
