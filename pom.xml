@@ -38,7 +38,7 @@
 		<demo.dir>${project.basedir}/src/demo</demo.dir>
 
 		<jpos.version>1.8.6</jpos.version>
-		<jpos-workflow-commons.version>0.0.1-SNAPSHOT</jpos-workflow-commons.version>		
+		<jpos-workflow-commons.version>1.0.0</jpos-workflow-commons.version>		
 		<commons-cli.version>1.2</commons-cli.version>		
 		
 		<junit.version>4.8.2</junit.version>
